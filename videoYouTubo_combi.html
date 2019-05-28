@@ -1,0 +1,130 @@
+
+<!DOCTYPE html>
+<html>
+<body>
+
+
+
+
+<div id="player" class="youtube">
+  <div class="play-button"></div>
+</div>
+
+
+<script>
+  (function () {
+    // А
+    // This code loads the IFrame Player API code asynchronously.
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    // This function creates an <iframe> (and YouTube player) after the API code downloads.
+    var player;
+
+
+    // В
+    var youtube = document.querySelectorAll(".youtube")  // он далее будет в роли родителя, с псевдонимом this, т.к. последующий код опуститься внутрь функции "for (var i = 0; i < youtube.length; i++) {}"
+
+    var urliframe = '<?= $this->videoData->video_full ?>'  // из полного URL адреса выпиливаем embed у видео
+    const nameRegex_0 = /embed\/(.*?)\?/
+    let resoursVideo_0 = urliframe.match(nameRegex_0)
+    let resoursVideo_exact = resoursVideo_0[1]
+    console.log('resoursVideo_exact', resoursVideo_exact)
+
+
+    for (var i = 0; i < youtube.length; i++) {  //  youtube.length = 1, проверка на доступность youtube-ресурса data-embed="AqcjdkPMPJA"
+
+      // part-В1
+      var source = "https://img.youtube.com/vi/" + resoursVideo_exact + "/maxresdefault.jpg" // "/sddefault.jpg" - картинка перед показом
+
+      var image = new Image();  // Это функционально эквивалентно document.createElement('img')
+      image.src = source;
+      image.addEventListener("load", function () {    // load - когда вся страница загружается, включая все зависимые ресурсы
+        youtube[i].appendChild(image);
+      }(i))   // i = 1, обработчик вешаем на ютубовскую картинку
+
+
+      // part-В2
+      youtube[i].addEventListener("click", function () {   // обработчик на див, в который мы инстиллируем ютубовский видео-фрейм
+
+        this.innerHTML = ""  // очищаем родителя от дочек, т.е. от <img>. Заставка-картинка удаляется.
+
+        player = new YT.Player('player', { // активируем плейер. Вставляем "А" в "В".
+          width: '640',
+          height: '360',
+          videoId: resoursVideo_exact,
+          events: {
+            'onReady': onPlayerReady
+          }
+        });
+
+        function onPlayerReady() {  // The API will call this function when the video player is ready.
+          player.playVideo();
+        }
+
+      })
+    }
+  })()
+</script>
+
+<style>
+  .youtube {
+    width: 640px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .youtube img {
+    width: 640px;
+    height: 360px;
+    top: -17.82%;
+    left: 0;
+    opacity: 0.7;
+  }
+
+  .youtube .play-button {
+    width: 90px;
+    height: 60px;
+    background-color: #333;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+    z-index: 1;
+    opacity: 0.8;
+    border-radius: 6px;
+  }
+
+  .youtube .play-button:before {
+    content: "";
+    border-style: solid;
+    border-width: 15px 0 15px 26.0px;
+    border-color: transparent transparent transparent #fff;
+  }
+
+  .youtube img,
+  .youtube .play-button {
+    cursor: pointer;
+  }
+
+  .youtube .play-button,
+  .youtube .play-button:before {
+    position: absolute;
+  }
+
+  .youtube .play-button,
+  .youtube .play-button:before {
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
+  }
+
+</style>
+
+
+
+
+</body>
+</html>
